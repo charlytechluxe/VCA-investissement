@@ -90,6 +90,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (parseFloat(savedData.btcAmount) > 0) btcAmountContainer.style.display = 'block';
 
     function updateAdvisor(suggested, targetMonthly, aheadDelta) {
+        const today = new Date();
+        const isBuyDay = today.getDate() === 8;
+
+        if (isBuyDay) {
+            advisorMessage.innerHTML = `🚀 <strong>C'est le 8 du mois !</strong> C'est le moment idéal pour ton virement Bitcoin mensuel de ${targetMonthly}€.`;
+            heroCard.className = 'apple-card';
+            buyDayTag.style.display = 'block';
+            return;
+        }
+
+        buyDayTag.style.display = 'none';
         if (suggested > targetMonthly) {
             const catchUp = suggested - targetMonthly;
             advisorMessage.innerHTML = `⚠️ En retard. Investis <strong>${suggested.toFixed(0)}€</strong> (${targetMonthly}€ + ${catchUp.toFixed(0)}€ de rattrapage).`;
@@ -323,17 +334,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     btcPriceDisplay.addEventListener('click', () => editPriceBtn.click());
 
-    // Reminder Logic
-    function checkBuyDay() {
-        const today = new Date();
-        if (today.getDate() === 8) {
-            buyDayTag.style.display = 'block';
-            if (advisorMessage) {
-                advisorMessage.innerHTML = `🚀 <strong>C'est le 8 !</strong> C'est le moment idéal pour ton virement Bitcoin mensuel.`;
-            }
-        }
-    }
-
     setReminderBtn.addEventListener('click', () => {
         const eventTitle = encodeURIComponent("Achat Bitcoin • Trade Republic");
         const eventDetails = encodeURIComponent("Rappel mensuel pour effectuer l'investissement programmé sur Trade Republic.");
@@ -342,7 +342,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.open(calendarUrl, '_blank');
     });
 
-    checkBuyDay();
+    // checkBuyDay(); // Logic moved to updateAdvisor
     fetchBtcPrice();
     setInterval(fetchBtcPrice, 30000); // More frequent updates (30s)
     initChart();
