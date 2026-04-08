@@ -40,6 +40,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const entryAmount = document.getElementById('entry-amount');
     const entryBtcPrice = document.getElementById('entry-btc-price');
 
+    // Reminder Selectors
+    const setReminderBtn = document.getElementById('set-reminder-btn');
+    const buyDayTag = document.getElementById('buy-day-tag');
+
     let vcaChart;
     let currentBtcPrice = 0;
     let isManualPrice = false;
@@ -319,6 +323,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     btcPriceDisplay.addEventListener('click', () => editPriceBtn.click());
 
+    // Reminder Logic
+    function checkBuyDay() {
+        const today = new Date();
+        if (today.getDate() === 8) {
+            buyDayTag.style.display = 'block';
+            if (advisorMessage) {
+                advisorMessage.innerHTML = `🚀 <strong>C'est le 8 !</strong> C'est le moment idéal pour ton virement Bitcoin mensuel.`;
+            }
+        }
+    }
+
+    setReminderBtn.addEventListener('click', () => {
+        const eventTitle = encodeURIComponent("Achat Bitcoin • Trade Republic");
+        const eventDetails = encodeURIComponent("Rappel mensuel pour effectuer l'investissement programmé sur Trade Republic.");
+        // RRULE for recurring event on the 8th of every month
+        const calendarUrl = `https://calendar.google.com/calendar/r/eventedit?text=${eventTitle}&details=${eventDetails}&recur=RRULE:FREQ=MONTHLY;BYMONTHDAY=8`;
+        window.open(calendarUrl, '_blank');
+    });
+
+    checkBuyDay();
     fetchBtcPrice();
     setInterval(fetchBtcPrice, 30000); // More frequent updates (30s)
     initChart();
