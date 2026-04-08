@@ -92,28 +92,33 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateAdvisor(suggested, targetMonthly, aheadDelta) {
         const today = new Date();
         const isBuyDay = today.getDate() === 8;
+        buyDayTag.style.display = isBuyDay ? 'block' : 'none';
 
-        if (isBuyDay) {
-            advisorMessage.innerHTML = `🚀 <strong>C'est le 8 du mois !</strong> C'est le moment idéal pour ton virement Bitcoin mensuel de ${targetMonthly}€.`;
-            heroCard.className = 'apple-card';
-            buyDayTag.style.display = 'block';
-            return;
-        }
+        let message = "";
+        let statusClass = "apple-card";
 
-        buyDayTag.style.display = 'none';
         if (suggested > targetMonthly) {
             const catchUp = suggested - targetMonthly;
-            advisorMessage.innerHTML = `⚠️ En retard. Investis <strong>${suggested.toFixed(0)}€</strong> (${targetMonthly}€ + ${catchUp.toFixed(0)}€ de rattrapage).`;
-            heroCard.className = 'apple-card loss';
+            message = `⚠️ En retard. Investis <strong>${suggested.toFixed(0)}€</strong> (${targetMonthly}€ + ${catchUp.toFixed(0)}€ de rattrapage).`;
+            statusClass = "apple-card loss";
         } else if (suggested < targetMonthly && suggested > 0) {
-            advisorMessage.innerHTML = `✅ Presque à l'objectif ! Tu n'as besoin que de <strong>${suggested.toFixed(0)}€</strong> ce mois-ci.`;
-            heroCard.className = 'apple-card profit';
+            message = `✅ Presque à l'objectif ! Tu n'as besoin que de <strong>${suggested.toFixed(0)}€</strong> ce mois-ci.`;
+            statusClass = "apple-card profit";
         } else if (suggested <= 0) {
-            advisorMessage.innerHTML = `🚀 <strong>Objectif atteint !</strong> Tu es en avance de <strong>${aheadDelta.toFixed(0)}€</strong> sur ton plan de 10€/mois.`;
-            heroCard.className = 'apple-card profit';
+            message = `🚀 <strong>Objectif atteint !</strong> Tu es en avance de <strong>${aheadDelta.toFixed(0)}€</strong> sur ton plan.`;
+            statusClass = "apple-card profit";
         } else {
-            advisorMessage.innerHTML = `✨ Pile sur l'objectif ! Ton virement de <strong>${targetMonthly}€</strong> est prêt.`;
-            heroCard.className = 'apple-card';
+            message = `✨ Pile sur l'objectif ! Ton virement de <strong>${targetMonthly}€</strong> est prêt.`;
+            statusClass = "apple-card";
+        }
+
+        if (isBuyDay) {
+            advisorMessage.innerHTML = `🚀 <strong>C'est le 8 !</strong> ${message}`;
+            // On Buy Day, we keep the card a bit more neutral or specific
+            heroCard.className = "apple-card"; 
+        } else {
+            advisorMessage.innerHTML = message;
+            heroCard.className = statusClass;
         }
     }
 
