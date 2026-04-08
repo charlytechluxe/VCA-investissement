@@ -50,21 +50,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- User Portfolio Data from Screenshots ---
     const userDefaults = {
-        monthlyTarget: 10,
-        currentValue: 50.37,
-        monthsElapsed: 7, 
-        btcAmount: 0.000858
+        monthlyTarget: 15,
+        currentValue: 101.50,
+        monthsElapsed: 8, 
+        btcAmount: 0.001652
     };
 
-    // Pre-filled history exact to sum up to 0.000858 BTC
+    // Real history exactly as in browser
     const manualHistory = [
-        { date: '2026-03-16', amountEur: 10, btcPrice: 66667, btcGained: 0.000150 },
-        { date: '2026-02-02', amountEur: 10, btcPrice: 83333, btcGained: 0.000120 },
-        { date: '2026-01-02', amountEur: 10, btcPrice: 76923, btcGained: 0.000130 },
-        { date: '2025-12-02', amountEur: 10, btcPrice: 90909, btcGained: 0.000110 },
-        { date: '2025-11-03', amountEur: 10, btcPrice: 71428, btcGained: 0.000140 },
-        { date: '2025-10-02', amountEur: 10, btcPrice: 92592, btcGained: 0.000108 },
-        { date: '2025-09-02', amountEur: 10, btcPrice: 100000, btcGained: 0.000100 }
+        { date: '2026-04-08', amountEur: 29.00, btcPrice: 61702, btcGained: 0.000470 },
+        { date: '2026-04-08', amountEur: 20.00, btcPrice: 61728, btcGained: 0.000324 },
+        { date: '2026-03-16', amountEur: 10.00, btcPrice: 66667, btcGained: 0.000150 },
+        { date: '2026-02-02', amountEur: 10.00, btcPrice: 83333, btcGained: 0.000120 },
+        { date: '2026-01-02', amountEur: 10.00, btcPrice: 76923, btcGained: 0.000130 },
+        { date: '2025-12-02', amountEur: 10.00, btcPrice: 90909, btcGained: 0.000110 },
+        { date: '2025-11-03', amountEur: 10.00, btcPrice: 71428, btcGained: 0.000140 },
+        { date: '2025-10-02', amountEur: 10.00, btcPrice: 92592, btcGained: 0.000108 },
+        { date: '2025-09-02', amountEur: 10.00, btcPrice: 100000, btcGained: 0.000100 }
     ];
 
     // --- Loading Data ---
