@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- User Portfolio Data from Screenshots ---
     const userDefaults = {
-        monthlyTarget: 15,
+        monthlyTarget: 10,
         currentValue: 101.50,
         monthsElapsed: 8, 
         btcAmount: 0.001652
