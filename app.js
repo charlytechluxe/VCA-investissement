@@ -45,8 +45,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const buyDayTag = document.getElementById('buy-day-tag');
 
     let vcaChart;
-    let currentBtcPrice = 0;
-    let isManualPrice = false;
+    let currentBtcPrice = parseFloat(localStorage.getItem('vca_manual_price')) || 0;
+    let isManualPrice = localStorage.getItem('vca_is_manual') === 'true';
 
     // --- User Portfolio Data from Screenshots ---
     const userDefaults = {
@@ -321,6 +321,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (val > 0) {
             currentBtcPrice = val;
             isManualPrice = true;
+            localStorage.setItem('vca_manual_price', currentBtcPrice);
+            localStorage.setItem('vca_is_manual', 'true');
             updatePriceDisplay();
             syncPortfolioWithBtc();
             priceModal.classList.remove('active');
@@ -329,6 +331,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     resetPriceBtn.addEventListener('click', () => {
         isManualPrice = false;
+        localStorage.removeItem('vca_manual_price');
+        localStorage.setItem('vca_is_manual', 'false');
         fetchBtcPrice();
     });
 
@@ -343,6 +347,48 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // checkBuyDay(); // Logic moved to updateAdvisor
+    
+    // --- Data Management ---
+    function exportData() {
+        const fullData = {
+            vca_data_v2: JSON.parse(localStorage.getItem('vca_data_v2')),
+            vca_history: JSON.parse(localStorage.getItem('vca_history')),
+            vca_manual_price: localStorage.getItem('vca_manual_price'),
+            vca_is_manual: localStorage.getItem('vca_is_manual')
+        };
+        const dataStr = JSON.stringify(fullData);
+        navigator.clipboard.writeText(dataStr).then(() => {
+            alert('Données copiées dans le presse-papier ! Tu peux maintenant les coller sur ton iPhone.');
+        }).catch(err => {
+            console.error('Clipboard Error', err);
+            alert('Erreur lors de la copie. Copie manuellement depuis la console.');
+            console.log(dataStr);
+        });
+    }
+
+    function importData() {
+        const dataStr = prompt('Colle ici tes données exportées (Code JSON) :');
+        if (!dataStr) return;
+        try {
+            const parsed = JSON.parse(dataStr);
+            if (parsed.vca_data_v2) localStorage.setItem('vca_data_v2', JSON.stringify(parsed.vca_data_v2));
+            if (parsed.vca_history) localStorage.setItem('vca_history', JSON.stringify(parsed.vca_history));
+            if (parsed.vca_manual_price) localStorage.setItem('vca_manual_price', parsed.vca_manual_price);
+            if (parsed.vca_is_manual) localStorage.setItem('vca_is_manual', parsed.vca_is_manual);
+            
+            alert('Importation réussie ! L\'application va redémarrer.');
+            location.reload();
+        } catch (err) {
+            alert('Erreur : Données invalides.');
+            console.error(err);
+        }
+    }
+
+    const exportBtn = document.getElementById('export-btn');
+    const importBtn = document.getElementById('import-btn');
+    if (exportBtn) exportBtn.addEventListener('click', exportData);
+    if (importBtn) importBtn.addEventListener('click', importData);
+
     fetchBtcPrice();
     setInterval(fetchBtcPrice, 30000); // More frequent updates (30s)
     initChart();
