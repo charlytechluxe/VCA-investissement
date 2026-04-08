@@ -1,0 +1,415 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --ios-blue: #007aff;
+    --ios-green: #34c759;
+    --ios-red: #ff3b30;
+    --ios-orange: #ff9500;
+    --ios-gray: #8e8e93;
+    --ios-light-gray: #f2f2f7;
+    --ios-dark-gray: #1c1c1e;
+    
+    --bg: #f2f2f7;
+    --surface: #ffffff;
+    --text-main: #000000;
+    --text-secondary: #8e8e93;
+    
+    --card-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+    --border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #000000;
+        --surface: #1c1c1e;
+        --text-main: #ffffff;
+        --text-secondary: #8e8e93;
+        --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        --border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg);
+    color: var(--text-main);
+    line-height: 1.4;
+    padding-bottom: 100px; /* Space for bottom nav */
+    transition: background-color 0.3s ease;
+}
+
+.container {
+    max-width: 440px;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+/* Header */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    margin-bottom: 0.5rem;
+}
+
+header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+}
+
+.user-profile {
+    width: 36px;
+    height: 36px;
+    background: var(--ios-light-gray);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ios-gray);
+}
+
+@media (prefers-color-scheme: dark) {
+    .user-profile { background: var(--ios-dark-gray); }
+}
+
+/* Smart Notification */
+.smart-toast {
+    background: var(--surface);
+    border-radius: 18px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border: var(--border);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    box-shadow: var(--card-shadow);
+}
+
+.toast-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toast-content p {
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* Apple Card */
+.apple-card {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1.58 / 1;
+    border-radius: 20px;
+    padding: 1.8rem;
+    color: #000;
+    overflow: hidden;
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.apple-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 80%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Mash Gradients for Card */
+.card-bg {
+    position: absolute;
+    inset: 0;
+    background: #f2f2f7; /* Default Neutral */
+    z-index: 0;
+    transition: background 1s ease;
+}
+
+.card-mesh {
+    position: absolute;
+    inset: -50%;
+    width: 200%;
+    height: 200%;
+    background-image: 
+        radial-gradient(at 0% 0%, #fffcea 0, transparent 50%), 
+        radial-gradient(at 50% 0%, #ebf1ff 0, transparent 50%), 
+        radial-gradient(at 100% 0%, #e0faff 0, transparent 50%), 
+        radial-gradient(at 0% 50%, #f4e8ff 0, transparent 50%), 
+        radial-gradient(at 100% 50%, #f9f9f9 0, transparent 50%), 
+        radial-gradient(at 0% 100%, #effff1 0, transparent 50%), 
+        radial-gradient(at 50% 100%, #fff5f5 0, transparent 50%), 
+        radial-gradient(at 100% 100%, #ffffff 0, transparent 50%);
+    filter: blur(40px) saturate(1.5);
+    opacity: 0.8;
+}
+
+.apple-card.profit .card-bg { background: #e8f5e9; }
+.apple-card.profit .card-mesh { 
+    background-image: radial-gradient(at 40% 20%, #81c784 0px, transparent 50%), radial-gradient(at 80% 0%, #4caf50 0px, transparent 50%), radial-gradient(at 0% 50%, #c8e6c9 0px, transparent 50%);
+}
+
+.apple-card.loss .card-bg { background: #ffebee; }
+.apple-card.loss .card-mesh { 
+    background-image: radial-gradient(at 40% 20%, #e57373 0px, transparent 50%), radial-gradient(at 80% 0%, #f44336 0px, transparent 50%), radial-gradient(at 0% 50%, #ffcdd2 0px, transparent 50%);
+}
+
+.card-content {
+    position: relative;
+    z-index: 2;
+}
+
+.card-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.5;
+    margin-bottom: 0.2rem;
+}
+
+.card-balance {
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+}
+
+/* Grid Sections */
+.stats-grid {
+    display: grid;
+    grid-template-cols: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.ios-card {
+    background: var(--surface);
+    border-radius: 18px;
+    padding: 1.2rem;
+    border: var(--border);
+    box-shadow: var(--card-shadow);
+}
+
+.ios-card h3 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.8rem;
+}
+
+.stat-val {
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+/* History List */
+.history-section h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    padding-left: 0.2rem;
+}
+
+.transaction-item {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 0.9rem;
+    margin-bottom: 0.5rem;
+    border: var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.transaction-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.symbol-circle {
+    width: 36px;
+    height: 36px;
+    background: var(--ios-light-gray);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-main);
+}
+
+@media (prefers-color-scheme: dark) {
+    .symbol-circle { background: #2c2c2e; }
+}
+
+.tx-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.tx-date {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.tx-amount {
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+/* Inputs */
+.ios-input-group {
+    margin-bottom: 1.5rem;
+}
+
+.ios-input-group label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+    margin-bottom: 0.4rem;
+    display: block;
+    color: var(--text-secondary);
+}
+
+.ios-input {
+    width: 100%;
+    background: var(--surface);
+    border: var(--border);
+    border-radius: 12px;
+    padding: 0.9rem 1rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-main);
+    outline: none;
+    transition: all 0.2s;
+}
+
+.ios-input:focus {
+    border-color: var(--ios-blue);
+    background: var(--surface);
+}
+
+/* Bottom Nav */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(var(--surface-rgb), 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: var(--border);
+    display: flex;
+    justify-content: space-around;
+    padding: 0.6rem 0.2rem calc(0.6rem + env(safe-area-inset-bottom));
+    z-index: 100;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: var(--ios-gray);
+    text-decoration: none;
+    font-size: 0.65rem;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.nav-item.active {
+    color: var(--ios-blue);
+}
+
+.nav-icon {
+    width: 24px;
+    height: 24px;
+}
+
+/* Modals */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 1000;
+    align-items: flex-end; /* Mobile drawer style */
+}
+
+.modal-content {
+    background: var(--bg);
+    border-radius: 20px 20px 0 0;
+    width: 100%;
+    max-width: 440px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+.modal-overlay.active { display: flex; }
+
+/* Buttons */
+.btn-ios {
+    background: var(--ios-blue);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 0.9rem;
+    width: 100%;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.btn-ios:active { opacity: 0.7; }
+
+.btn-ios-secondary {
+    background: var(--ios-light-gray);
+    color: var(--text-main);
+    border: none;
+    border-radius: 12px;
+    padding: 0.6rem 1rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+@media (prefers-color-scheme: dark) {
+    .btn-ios-secondary { background: var(--ios-dark-gray); }
+}
+
+.text-positive { color: var(--ios-green) !important; }
+.text-negative { color: var(--ios-red) !important; }
+
+/* Ticker Fix */
+#btc-ticker {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px;
+    background: rgba(249, 115, 22, 0.1);
+    color: #f97316;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}

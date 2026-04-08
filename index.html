@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Apple VCA • Wallet</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container fade-in">
+        <header>
+            <h1>Portefeuille</h1>
+            <div class="user-profile">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+        </header>
+
+        <div id="btc-ticker" class="mb-4" style="display: flex; align-items: center; gap: 8px;">
+            <span class="flex h-1.5 w-1.5 rounded-full bg-orange-500 animate-pulse"></span>
+            <span>BTC/EUR</span>
+            <span id="btc-price" style="font-weight: 600; cursor: pointer;">-- €</span>
+            <button id="edit-price-btn" style="background:none; border:none; padding: 4px; color: var(--ios-blue); cursor: pointer; display: flex; align-items: center;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+            <button id="reset-price-btn" style="display:none; background: rgba(0, 122, 255, 0.1); border: none; color: var(--ios-blue); font-size: 0.65rem; padding: 2px 8px; border-radius: 10px; cursor: pointer; font-weight: 600;">Live</button>
+        </div>
+
+        <!-- Smart Toast -->
+        <div id="smart-advisor" class="smart-toast">
+            <div class="toast-icon" style="background: rgba(88, 86, 214, 0.1); color: #5856d6;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            </div>
+            <div class="toast-content">
+                <p id="advisor-message">Analyse de votre stratégie...</p>
+            </div>
+        </div>
+
+        <!-- The Apple Card -->
+        <section id="hero-card" class="apple-card">
+            <div class="card-bg"></div>
+            <div class="card-mesh"></div>
+            
+            <div class="card-content">
+                <p class="card-label">À investir ce mois-ci</p>
+                <h2 id="suggested-amount" class="card-balance">0,00 €</h2>
+            </div>
+
+            <div class="card-content flex justify-between items-end">
+                <div class="flex flex-col">
+                    <p class="card-label">Performance</p>
+                    <p id="performance-percent-display" class="font-bold text-lg">--</p>
+                </div>
+                <div class="text-right">
+                    <p class="card-label">Valeur totale</p>
+                    <p id="current-total-val" class="font-bold text-lg">0,00 €</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+            <div class="ios-card">
+                <h3>Profit/Perte</h3>
+                <p id="performance-euro-display" class="stat-val">--</p>
+            </div>
+            <div class="ios-card">
+                <h3>Total Investi</h3>
+                <p id="total-invested-display" class="stat-val">--</p>
+            </div>
+            <div class="ios-card">
+                <h3>Prix d'achat</h3>
+                <p id="avg-buy-price-display" class="stat-val">--</p>
+            </div>
+        </div>
+
+        <!-- Strategy Stacks -->
+        <section class="history-section mb-6">
+            <h2>Ma Stratégie</h2>
+            <div class="ios-card">
+                <div class="ios-input-group">
+                    <label>Objectif Mensuel (€)</label>
+                    <input type="number" id="monthly-target" class="ios-input">
+                </div>
+                <div class="ios-input-group">
+                    <label>Valeur Portefeuille (€)</label>
+                    <div style="position: relative;">
+                        <input type="number" id="current-value" step="0.01" class="ios-input">
+                        <button id="sync-btc-btn" class="btn-ios-secondary" style="position: absolute; right: 8px; top: 10%; height: 80%;">Sync BTC</button>
+                    </div>
+                </div>
+                <div id="btc-amount-container" style="display:none;" class="ios-input-group fade-in">
+                    <label>Quantité BTC détenue</label>
+                    <input type="number" id="btc-amount" step="0.00000001" class="ios-input" style="background: rgba(249, 115, 22, 0.05);">
+                </div>
+                <div style="display: flex; gap: 12px; align-items: flex-end;">
+                    <div style="flex: 1;">
+                        <label class="card-label" style="margin-left:8px; display:block; margin-bottom:4px;">Mois écoulés</label>
+                        <input type="number" id="months-elapsed" class="ios-input">
+                    </div>
+                    <button id="add-month-btn" class="btn-ios" style="width: 50px;">+1</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chart -->
+        <section class="history-section mb-6">
+            <h2>Graphique</h2>
+            <div class="ios-card">
+                <div style="height: 160px; position: relative;">
+                    <canvas id="vca-chart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- History Transactions -->
+        <section class="history-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2>Activité</h2>
+                <button id="add-entry-btn" class="btn-ios-secondary">Ajouter</button>
+            </div>
+            
+            <div id="history-empty" class="text-center py-4 opacity-40 text-sm">
+                <p>Aucune transaction récente.</p>
+            </div>
+
+            <div id="history-container" style="display:none;">
+                <div id="history-list">
+                    <!-- Transactions will be injected here -->
+                </div>
+            </div>
+            
+            <div class="text-center mt-6">
+                <button id="reset-btn" style="background:transparent; border:none; color:var(--ios-red); font-weight:600; cursor:pointer; font-size: 0.8rem;">Réinitialiser les données</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Modals -->
+    <div id="price-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 1.5rem;">Ajuster le Prix</h2>
+            <div class="ios-input-group">
+                <label>Prix BTC actuel (€)</label>
+                <input type="number" id="manual-price-input" class="ios-input" placeholder="Ex: 61500">
+                <p style="font-size: 0.7rem; color: #8e8e93; margin-top: 8px;">Saisis le prix exact affiché sur Trade Republic.</p>
+            </div>
+            <div style="display: flex; gap: 12px; margin-top: 1rem;">
+                <button id="save-price-btn" class="btn-ios" style="flex: 2;">Appliquer</button>
+                <button id="cancel-price-btn" class="btn-ios-secondary" style="flex: 1;">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="entry-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 1.5rem;">Nouvel Achat</h2>
+            <div class="ios-input-group">
+                <label>Date</label>
+                <input type="date" id="entry-date" class="ios-input">
+            </div>
+            <div class="ios-input-group">
+                <label>Montant (€)</label>
+                <input type="number" id="entry-amount" class="ios-input">
+            </div>
+            <div class="ios-input-group">
+                <label>Prix BTC (€)</label>
+                <input type="number" id="entry-btc-price" class="ios-input">
+            </div>
+            <div style="display: flex; gap: 12px; margin-top: 1rem;">
+                <button id="save-entry-btn" class="btn-ios" style="flex: 2;">Enregistrer</button>
+                <button id="cancel-entry-btn" class="btn-ios-secondary" style="flex: 1;">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item active">
+            <div class="nav-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <span>Portfolio</span>
+        </a>
+        <a href="#" class="nav-item">
+            <div class="nav-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20"/></svg>
+            </div>
+            <span>Activité</span>
+        </a>
+        <a href="#" class="nav-item">
+            <div class="nav-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </div>
+            <span>Réglages</span>
+        </a>
+    </nav>
+
+    <script src="https://id.apple.com/appleauth/static/jsapi/appleid.auth.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
