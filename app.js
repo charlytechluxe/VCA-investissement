@@ -96,27 +96,64 @@ document.addEventListener('DOMContentLoaded', () => {
         const isBuyDay = today.getDate() === 8;
         buyDayTag.style.display = isBuyDay ? 'block' : 'none';
 
+        // Calculate performance parameters in real-time
+        const historyCost = historyData.reduce((acc, entry) => acc + (entry.amountEur || 0), 0);
+        const totalBtc = historyData.reduce((acc, entry) => acc + (entry.btcGained || 0), 0);
+        const totalInvested = historyCost; 
+        const currentVal = parseFloat(currentValueInput.value) || 0;
+        const profitLoss = currentVal - totalInvested;
+        const roiPercent = totalInvested > 0 ? (profitLoss / totalInvested) * 100 : 0;
+        const avgBuyPrice = totalBtc > 0 ? totalInvested / totalBtc : 0;
+
         let message = "";
         let statusClass = "apple-card";
 
-        if (suggested > targetMonthly) {
-            const catchUp = suggested - targetMonthly;
-            message = `⚠️ En retard. Investis <strong>${suggested.toFixed(0)}€</strong> (${targetMonthly}€ + ${catchUp.toFixed(0)}€ de rattrapage).`;
-            statusClass = "apple-card loss";
-        } else if (suggested < targetMonthly && suggested > 0) {
-            message = `✅ Presque à l'objectif ! Tu n'as besoin que de <strong>${suggested.toFixed(0)}€</strong> ce mois-ci.`;
-            statusClass = "apple-card profit";
-        } else if (suggested <= 0) {
-            message = `🚀 <strong>Objectif atteint !</strong> Tu es en avance de <strong>${aheadDelta.toFixed(0)}€</strong> sur ton plan.`;
+        // Smart VCA Advisor Logic based on BTC market and portfolio ROI
+        if (currentBtcPrice > 0 && avgBuyPrice > 0 && currentBtcPrice < avgBuyPrice) {
+            // Price is below average cost: Golden Accumulation Zone!
+            const discount = ((avgBuyPrice - currentBtcPrice) / avgBuyPrice) * 100;
+            const catchUp = suggested > targetMonthly ? suggested - targetMonthly : 0;
+            
+            message = `📉 **Opportunité VCA !** Le BTC est bas (${currentBtcPrice.toLocaleString('fr-FR', { maximumFractionDigits: 0 })} €), soit **${discount.toFixed(0)}% de réduction** par rapport à ton prix moyen (${avgBuyPrice.toLocaleString('fr-FR', { maximumFractionDigits: 0 })} €). `;
+            
+            if (suggested > targetMonthly) {
+                message += `Profites-en pour investir **${suggested.toFixed(0)}€** (${targetMonthly}€ de base + ${catchUp.toFixed(0)}€ de rattrapage) et faire chuter ton prix moyen !`;
+                statusClass = "apple-card loss";
+            } else {
+                message += `La formule recommande d'investir **${suggested.toFixed(0)}€** ce mois-ci. C'est idéal pour accumuler pas cher !`;
+                statusClass = "apple-card";
+            }
+        } else if (roiPercent > 10) {
+            // Portfolio has performed beautifully! Suggest increasing baseline target
+            const suggestedIncrease = targetMonthly + 5;
+            message = `🚀 **Excellente performance : +${roiPercent.toFixed(1)}%** cette année (${profitLoss.toLocaleString('fr-FR', { maximumFractionDigits: 0 })} € de gains réels) ! `;
+            
+            if (targetMonthly <= 15) {
+                message += `Ton portefeuille grandit bien. Pour maximiser tes intérêts composés tout en gardant l'esprit VCA, **je te conseille d'augmenter ton objectif mensuel de base à ${suggestedIncrease}€/mois** !`;
+            } else {
+                message += `La formule VCA préconise d'investir **${suggested.toFixed(0)}€** ce mois-ci pour consolider tes objectifs.`;
+            }
             statusClass = "apple-card profit";
         } else {
-            message = `✨ Pile sur l'objectif ! Ton virement de <strong>${targetMonthly}€</strong> est prêt.`;
-            statusClass = "apple-card";
+            // Standard VCA cases
+            if (suggested > targetMonthly) {
+                const catchUp = suggested - targetMonthly;
+                message = `⚠️ **En retard sur ton plan :** Investis **${suggested.toFixed(0)}€** (${targetMonthly}€ de base + ${catchUp.toFixed(0)}€ de rattrapage car le marché a glissé).`;
+                statusClass = "apple-card loss";
+            } else if (suggested < targetMonthly && suggested > 0) {
+                message = `✅ **Presque à l'objectif !** Grâce aux performances du marché, tu n'as besoin d'investir que **${suggested.toFixed(0)}€** ce mois-ci.`;
+                statusClass = "apple-card profit";
+            } else if (suggested <= 0) {
+                message = `🎉 **Cible dépassée !** Tu es en avance de **${Math.abs(aheadDelta).toFixed(0)}€** sur tes objectifs. Pas besoin d'investir ce mois-ci, garde ton cash de côté !`;
+                statusClass = "apple-card profit";
+            } else {
+                message = `✨ **Pile sur l'objectif !** Ton virement standard de **${targetMonthly}€** est prêt pour ce mois-ci.`;
+                statusClass = "apple-card";
+            }
         }
 
         if (isBuyDay) {
-            advisorMessage.innerHTML = `🚀 <strong>C'est le 8 !</strong> ${message}`;
-            // On Buy Day, we keep the card a bit more neutral or specific
+            advisorMessage.innerHTML = `🚀 **C'est le 8 (Jour d'Achat) !** ${message}`;
             heroCard.className = "apple-card"; 
         } else {
             advisorMessage.innerHTML = message;
